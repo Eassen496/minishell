@@ -1,4 +1,4 @@
-SRC		=  minishell.c
+SRC		=  minishell.c get_next_line.c
 OBJS	= ${SRC:.c=.o}
 CC		= gcc
 CFLAGS	= -Wall -Wextra -Werror

@@ -1,25 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abitonti <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/04/13 17:14:15 by abitonti          #+#    #+#             */
-/*   Updated: 2023/04/13 17:14:17 by abitonti         ###   ########.fr       */
+/*   Created: 2022/11/10 01:47:02 by abitonti          #+#    #+#             */
+/*   Updated: 2022/11/10 18:23:33 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
-# include <stdio.h>
-# include <readline/readline.h>
-# include <readline/history.h>
-# include <stdlib.h>
-# include <signal.h>
-# include <fcntl.h>
-# include <unistd.h>
-# include "get_next_line.h"
-//# define INPUTRC "inputrc"
+#ifndef GET_NEXT_LINE_H
+# define GET_NEXT_LINE_H
+
+typedef struct s_line
+{
+	char			*buff;
+	int				start;
+	int				end;
+	int				i;
+	struct s_line	*next;
+}	t_line;
+
+char	*get_next_line(int fd);
 
 #endif
