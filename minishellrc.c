@@ -31,21 +31,21 @@ int	rc_handler(char backslash, char color)
 	else if (backslash == '\\' && (color == 'g' || color == 'G'))
 		printf("\033[0;32m");
 	else if (backslash == '\\' && (color == 'y' || color == 'Y'))
-        printf("\033[0;33m");
+		printf("\033[0;33m");
 	else if (backslash == '\\' && (color == 'b' || color == 'B'))
-        printf("\033[0;34m");
+		printf("\033[0;34m");
 	else if (backslash == '\\' && (color == 'p' || color == 'P'))
-        printf("\033[0;35m");
+		printf("\033[0;35m");
 	else if (backslash == '\\' && (color == 'c' || color == 'C'))
-        printf("\033[0;36m");
+		printf("\033[0;36m");
 	else if (backslash == '\\' && (color == 'w' || color == 'W'))
-        printf("\033[0;37m");
+		printf("\033[0;37m");
 	else
 		return (1);
 	return (0);
 }
 
-void	rc_file()
+void	rc_file(void)
 {
 	int		i;
 	int		len;
@@ -56,7 +56,7 @@ void	rc_file()
 	if (fd != -1)
 	{
 		rc = get_next_line(fd);
-		while(rc != NULL)
+		while (rc != NULL)
 		{
 			i = 0;
 			len = ft_strlen(rc);
