@@ -17,7 +17,7 @@ int load_historic()
     int     fd;
     char    *line;
 
-    fd = open("historic", O_CREAT | O_RDWR | O_APPEND);
+    fd = open("historic", O_CREAT | O_RDWR | O_APPEND, 0777);
     if (fd == -1)
         return (fd);
     line = get_next_line(fd);
@@ -41,16 +41,53 @@ void    write_historic(char *line, int fd)
     write(fd, "\n", 1);
 }
 
+void sig_handler()
+{
+    char    c;
+
+    c = rl_end + '0';
+    write(1, "\nploc>", 6);
+    write(1, &c, 1);
+    return ;
+    //readline("");
+
+    //rl_redisplay();
+}
+
+void    parse_line(char *line)
+{
+    int i;
+    int j;
+
+    i = 0;
+    while (line[i])
+    {
+        if (line[i] == ' ')
+            line[i] = '_';
+        else if (line[i] == '\"' || line[i] == '\'')
+        {
+            j = 1;
+            while(line[i + j] && line[i + j] != line[i])
+                j++;
+            if (line[i + j] == line[i])
+            {
+                line[i] = '_';
+                line[i + j] = '_';
+                i += j;
+            }
+        }
+        i++;
+    }
+    //execute(line);
+}
+
 int main(void)
 {
     char    *line;
     int     historic;
-    /*struct sigaction    plop;
 
-    plop.sa_flags = ;
-    plop.sa_mask = ;
-    plop.__sigaction_u = ;
-    sigaction(SIGINT, &plop, NULL);*/
+    signal(SIGQUIT, SIG_IGN);
+    signal(SIGINT, sig_handler);
     historic = load_historic();
     line = 0;
     while (1)
@@ -60,15 +97,16 @@ int main(void)
         {
             add_history(line);
             write_historic(line, historic);
-            printf("%s\n", line);
+            parse_line(line);
+            printf("%s %d\n", line, rl_end);
             free(line);
         }
         else if (line)
             free(line);
         else
         {
-            printf("NULL\n");
-            break ;
+            //printf("NULL\n");
+            return (0);
         }
     }
 }

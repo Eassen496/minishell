@@ -20,6 +20,5 @@
 # include <fcntl.h>
 # include <unistd.h>
 # include "get_next_line.h"
-//# define INPUTRC "inputrc"
 
 #endif
