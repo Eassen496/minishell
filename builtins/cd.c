@@ -19,10 +19,15 @@
 #include <stdlib.h>
 #include<unistd.h>
 
-void    cd(char *str)
+int    cd(char *str)
 {
+    int code;
+
     if (!str)
-        chdir(getenv("HOME"));
+        code = chdir(getenv("HOME"));
     else
-        chdir(str);
+        code = chdir(str);
+    if (code == -1)
+        printf("bash: cd: %s: No such file or directory\n", str);
+    return (0);
 }
