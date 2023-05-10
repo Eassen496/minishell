@@ -1,7 +1,7 @@
 /*
  * =====================================================================================
  *
- *       Filename:  cd.c
+ *       Filename:  pwd.c
  *
  *    Description:  
  *
@@ -20,14 +20,16 @@
 #include <unistd.h>
 #include <stdio.h>
 
-void    pwd()
+char    *pwd(int print)
 {
     char cwd[1024];
     getcwd(cwd, sizeof(cwd));
-    printf("%s\n", cwd);
+    if (print == 0)
+        printf("%s\n", cwd);
+    return (cwd);
 }
 
 int main()
 {
-    pwd();
+    pwd(0);
 }
