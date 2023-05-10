@@ -14,6 +14,9 @@
 #include <stdio.h>
 #include "minishell.h"
 
+int	ft_strrchr(char *s, char c);
+char	*ft_strjoin(char *s1, char *s2);
+
 int	quote_error(char *str)
 {
 	int	i;

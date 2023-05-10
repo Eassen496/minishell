@@ -14,6 +14,9 @@
 #include <stdlib.h>
 #include <readline/readline.h>
 
+int	ft_strrchr(char *s, char c);
+int	last_quote(char *str);
+
 void	print_echo_beginning(char *str, int lim)
 {
 	int	i;
@@ -51,21 +54,6 @@ void	print_echo_end(char *str, int start, int option)
 	}
 	if (option == 0)
 		printf("\n");
-}
-
-int	last_quote(char *str)
-{
-	int	quote;
-	int	dquote;
-
-	quote = ft_strrchr(str, '\'');
-	dquote = ft_strrchr(str, '\"');
-	if (quote > dquote)
-		return (quote);
-	else if (quote < dquote)
-		return (dquote);
-	else
-		return (0);
 }
 
 int	loc_option(char *str)

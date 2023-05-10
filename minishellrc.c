@@ -14,15 +14,7 @@
 #include <stdio.h>
 #include "minishell.h"
 
-int	ft_strlen(char *str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i])
-		i++;
-	return (i);
-}
+int	ft_strlen(char *str);
 
 int	rc_handler(char backslash, char color)
 {
