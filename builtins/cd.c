@@ -1,33 +1,28 @@
-/*
- * =====================================================================================
- *
- *       Filename:  cd.c
- *
- *    Description:  
- *
- *        Version:  1.0
- *        Created:  10/05/2023 13:45:27
- *       Revision:  none
- *       Compiler:  gcc
- *
- *         Author:  Ale-roux (Eassen496), 
- *   Organization:  
- *
- * =====================================================================================
- */
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cd.c                                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ale-roux <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/05/10 16:12:48 by ale-roux          #+#    #+#             */
+/*   Updated: 2023/05/10 16:14:28 by ale-roux         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include <stdlib.h>
-#include<unistd.h>
+#include <unistd.h>
+#include <stdio.h>
 
-int    cd(char *str)
+int	cd(char *str)
 {
-    int code;
+	int	code;
 
-    if (!str)
-        code = chdir(getenv("HOME"));
-    else
-        code = chdir(str);
-    if (code == -1)
-        printf("bash: cd: %s: No such file or directory\n", str);
-    return (0);
+	if (!str)
+		code = chdir(getenv("HOME"));
+	else
+		code = chdir(str);
+	if (code == -1)
+		printf("minishell: cd: %s: No such file or directory\n", str);
+	return (0);
 }

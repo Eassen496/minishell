@@ -83,7 +83,7 @@ int	loc_option(char *str)
 	return (0);
 }
 
-char	*echo(char *str)
+int	*echo(char *str)
 {
 	int	i;
 	int	option;
