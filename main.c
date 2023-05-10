@@ -19,7 +19,7 @@ int	main(void)
 {
 	char	*command;
 
-	//rc_file();
+	rc_file();
 	while (1)
 	{
 		command = readline("minishell-0.5$ ");
