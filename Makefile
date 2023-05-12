@@ -9,7 +9,7 @@ RM		= rm -rf
 	${CC} ${CFLAGS} -c $< -o ${<:.c=.o}
 
 ${NAME}	: ${OBJS}
-	gcc ${CFLAGS} -lreadline ${OBJS} -o ${NAME}
+	${CC} ${CFLAGS} -lreadline ${OBJS} -o ${NAME}
 
 all		: ${NAME}
 
