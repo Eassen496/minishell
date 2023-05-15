@@ -13,6 +13,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include "minishell.h"
+
 char	*verif_quote(char *str);
 void	rc_file(void);
 
@@ -74,12 +75,50 @@ void    parse_line(char *line)
     //execute(line);
 }
 
-int	main(void)
+void    print_env(t_env *env)
+{
+    while (env)
+    {
+        printf("%s=%s\n", env->name, env->val);
+        env = env->next;
+    }
+}
+
+t_env    *load_env(char **envp)
+{
+    t_env   *first;
+    t_env   *current;
+
+    if (*envp)
+    {
+        first = malloc(sizeof(t_env));
+        current = first;
+        current->name = strcpy(*envp);
+        current->val = getenv(current->name);
+        current->next = 0;
+    }
+    else
+        return (0);
+    while(*(++envp))
+    {
+        current->next = malloc(sizeof(t_env));
+        current = current->next;
+        current->name = strcpy(*envp);
+        current->val = getenv(current->name);
+        current->next = 0;
+    }
+    return (first);
+}
+
+int	main(char **envp)
 {
 	char	*command;
 	int		history;
+    t_env   *env;
 
 	rc_file();
+    env = load_env(envp);
+    print_env(env);
 	history = load_historic();
 	while (1)
 	{

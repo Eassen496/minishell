@@ -23,6 +23,9 @@ int	cd(char *str)
 	else
 		code = chdir(str);
 	if (code == -1)
-		printf("minishell: cd: %s: No such file or directory\n", str);
+	{
+		perror("minishell: cd: ");
+		//printf("minishell: cd: %s: No such file or directory\n", str);
+	}
 	return (0);
 }

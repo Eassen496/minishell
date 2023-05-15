@@ -21,4 +21,11 @@
 # include <unistd.h>
 # include "get_next_line.h"
 
+typedef struct s_env
+{
+    char    *name;
+    char    *val;
+    void    *next;
+}   t_env;
+
 #endif
