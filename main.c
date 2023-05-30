@@ -13,40 +13,14 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include "minishell.h"
+#include <fcntl.h>
+#include <termios.h>
 
 char	*verif_quote(char *str);
 void	rc_file(void);
-
 char	*get_next_line(int fd);
-
-void    write_historic(char *line, int fd)
-{
-    int l;
-
-    l = 0;
-    while (line[l])
-        l++;
-    write(fd, line, l);
-    write(fd, "\n", 1);
-}
-
-int load_historic()
-{
-    int     fd;
-    char    *line;
-
-    fd = open("history", O_CREAT | O_RDWR | O_APPEND, 0777);
-    if (fd == -1)
-        return (fd);
-    line = get_next_line(fd);
-    while (line)
-    {
-        add_history(line);
-        free(line);
-        line = get_next_line(fd);
-    }
-    return (fd);
-}
+void    write_historic(char *line, int fd);
+int 	load_historic();
 
 void    parse_line(char *line)
 {
@@ -75,65 +49,59 @@ void    parse_line(char *line)
     //execute(line);
 }
 
-void    print_env(t_env *env)
+void sig_handler()
 {
-    while (env)
-    {
-        printf("%s=%s\n", env->name, env->val);
-        env = env->next;
-    }
+    char    c;
+
+    c = rl_end + '0';
+    write(1, "\n", 1);
+    write(1, "minishell-4.2$ ", 15);
+    return ;
+
+    //rl_redisplay();
 }
 
-t_env    *load_env(char **envp)
-{
-    t_env   *first;
-    t_env   *current;
-
-    if (*envp)
-    {
-        first = malloc(sizeof(t_env));
-        current = first;
-        current->name = strcpy(*envp);
-        current->val = getenv(current->name);
-        current->next = 0;
-    }
-    else
-        return (0);
-    while(*(++envp))
-    {
-        current->next = malloc(sizeof(t_env));
-        current = current->next;
-        current->name = strcpy(*envp);
-        current->val = getenv(current->name);
-        current->next = 0;
-    }
-    return (first);
-}
-
-int	main(char **envp)
+int	main(int argc, char **argv, char **envp)
 {
 	char	*command;
 	int		history;
     t_env   *env;
+    struct termios term;
 
 	rc_file();
-    env = load_env(envp);
-    print_env(env);
+    //env = load_env(envp);
+    //print_env(env);
 	history = load_historic();
+    command = 0;
+    tcgetattr(STDIN_FILENO, &term);
+    term.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &term);
 	while (1)
 	{
-		command = readline("minishell-0.5$ ");
-		command = verif_quote(command);
+        signal(SIGQUIT, SIG_IGN);
+        signal(SIGINT, sig_handler);
+		command = readline("minishell-4.2$ ");
+        //command = verif_quote(command);
+        if (!command)
+        {
+            write(1, "exit\n", 5);
+            exit (1);
+        }
 		if (command && *command)
 		{
+            //command = verif_quote(command);
 			add_history(command);
 			write_historic(command, history);
 			parse_line(command);
-			printf("%s %d\n", command, rl_end);
+			//printf("%s\n", command);
 			free(command);
 		}
 		else if (command)
 			free(command);
+        else
+            return (0);
 	}
+    term.c_lflag |= ICANON | ECHO;
+    tcsetattr(STDIN_FILENO, TCSANOW, &term);
 	return (0);
 }
