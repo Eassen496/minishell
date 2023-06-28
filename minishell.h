@@ -23,9 +23,24 @@
 
 typedef struct s_env
 {
-    char    *name;
-    char    *val;
-    void    *next;
+	char	*nameval;
+	void	*next;
 }   t_env;
+
+typedef struct s_token
+{
+	int		token;
+	char	*line;
+	void	*next;
+}	t_token;
+
+typedef struct s_cmd
+{
+	t_token	*tokens;
+	int		fdin;
+	int		fdout;
+	void	*next;
+}   t_cmd;
+
 
 #endif

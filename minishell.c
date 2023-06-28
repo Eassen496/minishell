@@ -12,238 +12,241 @@
 
 #include "minishell.h"
 
-char    *ft_strcpy(char *str)
+char	*ft_strcpy(char *str)
 {
-    int i;
-    char    *res;
+	int 	i;
+	char	*res;
 
-    if (!str)
-        return (0);
-    i = 0;
-    while (str[i])
-        i++;
-    res = malloc(i++ + 1);
-    while (i--)
-        res[i] = str[i];
-    return (res);
+	if (!str)
+		return (0);
+	i = 0;
+	while (str[i])
+		i++;
+	res = malloc(i++ + 1);
+	while (i--)
+		res[i] = str[i];
+	return (res);
 }
 
 int ft_strcmp(char *s1, char *s2)
 {
-    while (*s1 && *s1 == *s2)
-    {
-        s1++;
-        s2++;
-    }
-    if (*s1 == *s2)
-        return (1);
-    return (0);
+	while (*s1 && *s1 == *s2)
+	{
+		s1++;
+		s2++;
+	}
+	if (*s1 == *s2)
+		return (1);
+	return (0);
 }
 
-int load_historic()
+int	ft_isamong(char c, char *sep)
 {
-    int     fd;
-    char    *line;
-
-    fd = open("historic", O_CREAT | O_RDWR | O_APPEND, 0777);
-    if (fd == -1)
-        return (fd);
-    line = get_next_line(fd);
-    while (line)
-    {
-        add_history(line);
-        free(line);
-        line = get_next_line(fd);
-    }
-    return (fd);
+	if (!c)
+		return (1);
+	while(*sep)
+	{
+		if (c == *sep)
+			return (1);
+		sep++;
+	}
+	return (0);
 }
 
-void    write_historic(char *line, int fd)
-{
-    int l;
 
-    l = 0;
-    while (line[l])
-        l++;
-    write(fd, line, l);
-    write(fd, "\n", 1);
+void	sig_handler()
+{
+	char	c;
+
+	c = rl_end + '0';
+	write(1, "\nploc>", 6);
+	write(1, &c, 1);
+	return ;
+	//readline("");
+
+	//rl_redisplay();
 }
 
-void sig_handler()
+int	ft_isspace(char c)
 {
-    char    c;
-
-    c = rl_end + '0';
-    write(1, "\nploc>", 6);
-    write(1, &c, 1);
-    return ;
-    //readline("");
-
-    //rl_redisplay();
+	if (c == ' ' || c == '\f' || c == '\t' || c == '\n' || c == '\r' || c == '\v')
+		return (1);
+	return (0);
 }
 
-void    parse_line(char *line)
+int	ft_isseparator(char c)
 {
-    int i;
-    int j;
-
-    i = 0;
-    while (line[i])
-    {
-        if (line[i] == ' ')
-            line[i] = '_';
-        else if (line[i] == '\"' || line[i] == '\'')
-        {
-            j = 1;
-            while(line[i + j] && line[i + j] != line[i])
-                j++;
-            if (line[i + j] == line[i])
-            {
-                line[i] = '_';
-                line[i + j] = '_';
-                i += j;
-            }
-        }
-        i++;
-    }
-    //execute(line);
+	if (ft_isspace(c) || !c || c == '<' || c == '>' || c == '|')
+		return (1);
+	return (0);
 }
 
-void    print_env(t_env *env)
+void	ft_getquote(t_env *env, char **line, char c, int fd)
 {
-    while (env)
-    {
-        printf("%s=%s\n", env->name, env->val);
-        env = env->next;
-    }
+	int	i;
+
+	i = 1;
+		while(*(*line + i) && *(*line + i) != c)
+			i++;
+		if (*(*line + i) == c && (*line)++)
+		{
+			while (**line != c)
+			{
+				if (c == '\"' && **line == '$' && ++(*line))
+					ft_getenv(env, line, fd);
+				else
+					write(fd, (*line)++, 1);
+			}
+			(*line)++;
+		}
+		else
+			write(fd, (*line)++, 1);
 }
 
-void    free_env(t_env *current)
+
+char	*ft_getfilename(char **line, t_env *env)
 {
-    free(current->val);
-    free(current->name);
-    free(current);
+	char	*res;
+	int		mypipe[2];
+	int		j;
+
+	res = 0;
+	pipe(mypipe);
+	while (ft_isspace(**line))
+		(*line)++;
+	while (!ft_isseparator(**line))
+	{
+		if (**line == '\"' || **line == '\'')
+			ft_getquote(env, line, **line, mypipe[1]);
+		if (**line == '$')
+			ft_getenv(env, line, mypipe[1]);
+	}
 }
 
-t_env    *load_env(char **envp)
+t_cmd   *cmd_init(int fdin, int fdout)
 {
-    t_env   *first;
-    t_env   *current;
+	t_cmd   *res;
 
-    if (*envp)
-    {
-        first = malloc(sizeof(t_env));
-        current = first;
-        current->name = ft_strcpy(*envp);
-        current->val = ft_strcpy(getenv(current->name));
-        current->next = 0;
-    }
-    else
-        return (0);
-    while(*(++envp))
-    {
-        current->next = malloc(sizeof(t_env));
-        current = current->next;
-        current->name = ft_strcpy(*envp);
-        current->val = ft_strcpy(getenv(current->name));
-        current->next = 0;
-    }
-    return (first);
-   
+	res = malloc(sizeof(t_cmd));
+	res->fdin = fdin;
+	res->fdout = fdout;
+	res->next = 0;
+	res->tokens = 0;
+	return (res);
 }
 
-void    remove_env(t_env  **env, t_env *current, char *name)
+void	parse_line(char *line, t_env *env)
 {
-    t_env   *next;
+	t_cmd   *cmd;
+	t_cmd	*firstcmd;
+	int		mypipe[2];
+	int		arg[2];
 
-    if (!current)
-        return ;
-    if (ft_strcmp(current->name, name))
-    {
-        *env = current->next;
-        free_env(current);
-        return ;
-    }
-    next = current->next;
-    while (next)
-    {
-        if (ft_strcmp(next->name, name))
-        {
-            current->next = next->next;
-            free_env(next);
-            return ;
-        }
-        next = next->next;
-        current = current->next;
-    }
+	cmd = cmd_init(0, 1);
+	pipe(arg);
+	firstcmd = cmd;
+	while (*line)
+	{
+		while (ft_isspace(*line))
+			line++;
+		if (*line == '|' && line++)
+		{
+			pipe(mypipe);
+			cmd->fdout = mypipe[1];
+			cmd->next = cmd_init(mypipe[0], 1);
+			cmd = cmd->next;
+		}
+		else if (*line == '>' && *(++line) != '>')
+			cmd->fdout = open(ft_getfilename(&line, env), O_WRONLY);
+		else if (*line == '>' && line++)
+			cmd->fdout = open(ft_getfilename(&line, env), O_WRONLY || O_APPEND);
+		else if (*line == '<' && *(++line) != '<')
+			cmd->fdin = open(ft_getfilename(&line, env), O_RDONLY);
+		else if (*line == '\"' || *line == '\'')
+			ft_getquote(env, &line, *line, mypipe[1]);
+		else
+			add_word(cmd, ft_getword(&line, env));
+	}
 }
 
-void    add_env(t_env  **env, t_env *current, char *name, char *value)
+/*void	parse_line(char *line, t_env *env)
 {
-    while (current)
-    {
-        if (ft_strcmp(current->name, name))
-        {
-            current->val = ft_strcpy(value);
-            return ;
-        }
-        if (!current->next)
-            break ;
-        current = current->next;
-    }
-    if (current)
-    {
-        current->next = malloc(sizeof(t_env));
-        current = current->next;
-    }
-    else
-    {
-        *env = malloc(sizeof(t_env));
-        current = *env;
-    }
-    current->next = 0;
-    current->name = ft_strcpy(name);
-    current->val = ft_strcpy(value);
+	t_cmd   *cmd;
+	t_cmd	*firstcmd;
+	int		mypipe[2];
+	int		arg[2];
+
+	cmd = cmd_init(0, 1);
+	pipe(arg);
+	firstcmd = cmd;
+	while (*line)
+	{
+		while (ft_isspace(*line))
+			line++;
+		if (*line == '|' && line++)
+		{
+			pipe(mypipe);
+			cmd->fdout = mypipe[1];
+			cmd->next = cmd_init(mypipe[0], 1);
+			cmd = cmd->next;
+		}
+		else if (*line == '>' && *(++line) != '>')
+			cmd->fdout = open(ft_getfilename(&line, env), O_WRONLY);
+		else if (*line == '>' && line++)
+			cmd->fdout = open(ft_getfilename(&line, env), O_WRONLY || O_APPEND);
+		else if (*line == '<' && *(++line) != '<')
+			cmd->fdin = open(ft_getfilename(&line, env), O_RDONLY);
+		else if (*line == '\"' || *line == '\'')
+			ft_getquote(env, &line, *line, mypipe[1]);
+		else
+			add_word(cmd, ft_getword(&line, env));
+	}
+}*/
+
+
+void	getval(char *nameval, int fd)
+{
+	while (*nameval != '=')
+		nameval++;
+	nameval++;
+	while(*nameval)
+		write(fd, nameval++, 1);
 }
 
 int main(int argc, char **argv, char **envp)
 {
-    char    *line;
-    int     historic;
-    t_env   *env;
+	char	*line;
+	int	 historic;
+	t_env   *env;
 
-    (void) argc;
-    (void) argv;
-    env = load_env(envp);
-    printf("ok\n");
-    add_env(&env, env, "plop", "ca marche");
-    printf("ok\n");
-    add_env(&env, env, "plop2", "ca marche pas");
-    printf("ok\n");
-    remove_env(&env, env, "plop2");
-    printf("ok\n");
-    print_env(env);
-    signal(SIGQUIT, SIG_IGN);
-    signal(SIGINT, sig_handler);
-    historic = load_historic();
-    line = 0;
-    while (1)
-    {
-        line = readline("plop>");
-        if (line && *line)
-        {
-            add_history(line);
-            write_historic(line, historic);
-            parse_line(line);
-            printf("%s %d\n", line, rl_end);
-            free(line);
-        }
-        else if (line)
-            free(line);
-        else
-        {
-            //printf("NULL\n");
-            return (0);
-        }
-    }
+	(void) argc;
+	(void) argv;
+	env = load_env(envp);
+	add_env(&env, env, "plop=ca marche");
+	add_env(&env, env, "plop2=ca marche pas");
+	add_env(&env, env, "plop2=");
+	print_env(env);
+	signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, sig_handler);
+	historic = load_historic();
+	line = 0;
+	while (1)
+	{
+		line = readline("plop>");
+		if (line && *line)
+		{
+			add_history(line);
+			write_historic(line, historic);
+			parse_line(line, env);
+			printf("%s %d\n", line, rl_end);
+			free(line);
+		}
+		else if (line)
+			free(line);
+		else
+		{
+			//printf("NULL\n");
+			return (0);
+		}
+	}
 }
