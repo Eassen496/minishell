@@ -6,10 +6,10 @@ NAME	= minishell
 RM		= rm -rf
 
 .c.o	:
-	${CC} ${CFLAGS} -c $< -o ${<:.c=.o}
+	${CC} ${CFLAGS} -c $< -o ${<:.c=.o} -I ~/.brew/Cellar/readline/8.2.1/include
 
 ${NAME}	: ${OBJS}
-	${CC} ${CFLAGS} -lreadline ${OBJS} -o ${NAME}
+	${CC} ${CFLAGS} -lreadline -L ~/.brew/Cellar/readline/8.2.1/lib ${OBJS} -o ${NAME}
 
 all		: ${NAME}
 
