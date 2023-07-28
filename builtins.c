@@ -1,0 +1,110 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtins.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/07/08 22:28:41 by abitonti          #+#    #+#             */
+/*   Updated: 2023/07/19 04:13:37 by abitonti         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+void	ft_export(t_env **env, t_token *token)
+{
+	int	i;
+
+	while (token)
+	{
+		i = -1;
+		while (token->line[++i])
+		{
+			if (token->line[i] == '=')
+			{
+				add_env(env, *env, token->line);
+				break ;
+			}
+			else if (ft_isamong(token->line[i], "!@#$^*(){}[]:\'\""))
+			{
+				write(2, "minishell: export: '", 20);
+				write(2, token->line, ft_strlen(token->line));
+				write(2, "' : not a valid identifier\n", 27);
+				break ;
+			}
+		}
+		token = token->next;
+	}
+}
+
+void	ft_updatepwd(t_env **env)
+{
+	char	*wd;
+	int		fd[2];
+
+	pipe(fd);
+	wd = "PWD";
+	write(fd[1], "OLDPWD=", 7);
+	wd = pipetostr(fd, ft_getenv(*env, &wd, fd[1], 0) + 7, 0);
+	add_env(env, *env, wd);
+	free(wd);
+	wd = ft_strjoin("PWD=", getcwd(0, 0), 2);
+	add_env(env, *env, wd);
+	free(wd);
+}
+
+void	ft_cd(t_env **env, t_token *token, int tofree)
+{
+	char	*path;
+	int		fd[2];
+
+	path = "HOME";
+	while (token && token->token)
+		token = token->next;
+	if (!token || !(token->line))
+	{
+		pipe(fd);
+		path = pipetostr(fd, ft_getenv(*env, &path, fd[1], 0), 1);
+		tofree = 2;
+	}
+	else
+		path = token->line;
+	if (!path)
+		write(2, "minishell: cd: HOME not set\n", 28);
+	else if (chdir(path) == -1)
+	{
+		path = ft_strjoin("minishell: cd: ", path, tofree);
+		perror(path);
+	}
+	else
+		ft_updatepwd(env);
+	if (tofree && path)
+		free(path);
+}
+
+void	ft_unset(t_env **env, t_token *token)
+{
+	int	i;
+
+	while (token)
+	{
+		if ((!token->token))
+		{
+			i = -1;
+			while (token->line[++i])
+			{
+				if (ft_isamong(token->line[i], "!@#$^*(){}[]:\'\"="))
+				{
+					write(2, "minishell: unset: '", 19);
+					write(2, token->line, ft_strlen(token->line));
+					write(2, "' : not a valid identifier\n", 27);
+					break ;
+				}
+			}
+			if (!token->line[i])
+				remove_env(env, *env, token->line);
+		}
+		token = token->next;
+	}
+}

@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   historic.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abitonti <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/12 19:01:23 by abitonti          #+#    #+#             */
-/*   Updated: 2023/06/12 19:05:35 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/07/17 01:28:53 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int load_historic()
+int	load_historic(void)
 {
-	int	 	fd;
+	int		fd;
 	char	*line;
 
 	fd = open("historic", O_CREAT | O_RDWR | O_APPEND, 0777);
@@ -32,7 +32,7 @@ int load_historic()
 
 void	write_historic(char *line, int fd)
 {
-	int l;
+	int	l;
 
 	l = 0;
 	while (line[l])

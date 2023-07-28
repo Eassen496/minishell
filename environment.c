@@ -3,109 +3,83 @@
 /*                                                        :::      ::::::::   */
 /*   environment.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abitonti <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/12 19:01:23 by abitonti          #+#    #+#             */
-/*   Updated: 2023/06/12 19:05:35 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/07/17 02:56:30 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	print_env(t_env *env)
+int	namecmp(char *nameval, char *name)
 {
-	while (env)
+	while (*name && *nameval == *name && *nameval != '=')
 	{
-		printf("%s\n", env->nameval);
-		env = env->next;
-	}
-}
-
-int namecmp(char *nameval, char **name)
-{
-	while (**name && *nameval == **name && *nameval != '=')
-	{
-		(*name)++;
+		name++;
 		nameval++;
 	}
-	if (*nameval == '=' && ft_isamong(**name, "\t\n\f\r\v <>&|\'\"?!$"))
+	if (*nameval == '=' && ft_isamong(*name, "\t\n\f\r\v <>&|\'\"?!$/"))
 		return (1);
-	if (*nameval == '=' && **name == '=')
+	if (*nameval == '=' && *name == '=')
 		return (2);
 	return (0);
 }
 
-void	ft_getenv(t_env *env, char **line, int fd)
+static int	getval(char *nameval, int fd, int *n, int *error)
+{	
+	int	i;
+
+	i = 0;
+	while (*nameval != '=' && ++i)
+		nameval++;
+	nameval++;
+	while (*nameval)
+	{
+		if (error && ft_isspace(*nameval))
+			*error = 1;
+		*n += write(fd, nameval++, 1);
+	}
+	return (i);
+}
+
+int	ft_getenv(t_env *env, char **line, int fd, int *error)
 {
 	int	i;
 
 	i = 0;
-	if (ft_isamong(**line, "\t\n\f\r\v <>&|"))
-	{
-		write(fd, "$", 1);
-		return ;
-	}
-	else if (ft_isamong(**line, "\'\"!"))
-		return ;
+	if (ft_isamong(**line, "\t\n\f\r\v <>|/!"))
+		return (write(fd, "$", 1));
+	else if (ft_isamong(**line, "\'\""))
+		return (0);
 	else if (**line == '?' && ++(*line))
-	{
-		ft_printlastreturnvalue(fd);
-		return ;
-	}
+		//return(ft_printlastreturnvalue(fd));
+		return (write(fd, "?", 1));
 	while (env)
 	{
-		if (namecmp(env->nameval, line) == 1)
+		if (namecmp(env->nameval, *line) == 1)
 		{
-			getval(env->nameval, fd);
-			return ;
+			(*line) += getval(env->nameval, fd, &i, error);
+			return (i);
 		}
 		env = env->next;
 	}
-	return ;
-}
-
-void	free_env(t_env *current)
-{
-	free(current->nameval);
-	free(current);
-}
-
-
-t_env	*load_env(char **envp)
-{
-	t_env   *first;
-	t_env   *current;
-
-	if (*envp)
-	{
-		first = malloc(sizeof(t_env));
-		current = first;
-		current->nameval = ft_strcpy(*envp);
-		current->next = 0;
-	}
-	else
+	if (error)
 		return (0);
-	while(*(++envp))
-	{
-		current->next = malloc(sizeof(t_env));
-		current = current->next;
-		current->nameval = ft_strcpy(*envp);
-		current->next = 0;
-	}
-	return (first);
-   
+	return (-1);
 }
 
-void	remove_env(t_env  **env, t_env *current, char *name)
+void	remove_env(t_env **env, t_env *current, char *name)
 {
-	t_env   *next;
+	t_env	*next;
 
 	if (!current)
 		return ;
 	if (namecmp(current->nameval, name) == 1)
 	{
 		*env = current->next;
-		free_env(current);
+		free(current->nameval);
+		free(current);
 		return ;
 	}
 	next = current->next;
@@ -114,7 +88,8 @@ void	remove_env(t_env  **env, t_env *current, char *name)
 		if (namecmp(next->nameval, name) == 1)
 		{
 			current->next = next->next;
-			free_env(next);
+			free(next->nameval);
+			free(next);
 			return ;
 		}
 		next = next->next;
@@ -122,7 +97,7 @@ void	remove_env(t_env  **env, t_env *current, char *name)
 	}
 }
 
-void	add_env(t_env  **env, t_env *current, char *nameval)
+void	add_env(t_env **env, t_env *current, char *nameval)
 {
 	while (current)
 	{
