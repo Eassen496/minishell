@@ -6,7 +6,7 @@
 /*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/17 02:33:21 by abitonti          #+#    #+#             */
-/*   Updated: 2023/07/19 04:36:16 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/07/30 04:17:11 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ int	exectoken(t_cmd *cmd, t_token *token, t_env **env)
 		if (token->token == 1)
 		{
 			token = ft_pipe(cmd, token);
-			cmdexec(cmd, env);
+			cmdexec(cmd, env, cmd->tokens);
 			cmd = cmd->next;
 		}
 		else if (!(token->token) || cmd->err)
@@ -66,7 +66,7 @@ int	exectoken(t_cmd *cmd, t_token *token, t_env **env)
 		else if (token->token == 5)
 			token = ft_redir(cmd, *env, token, O_RDONLY);
 	}
-	cmdexec(cmd, env);
+	cmdexec(cmd, env, cmd->tokens);
 	return (0);
 }
 
@@ -89,6 +89,5 @@ int	parse_line(char *line, t_env **env)
 	if (checktokenlist(cmd->tokens, -1))
 		return (freecmd(cmd, 0));
 	exectoken(cmd, cmd->tokens, env);
-	ft_printtokenlist(cmd);
 	return (0 * freecmd(cmd, 1));
 }

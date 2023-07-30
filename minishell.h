@@ -6,7 +6,7 @@
 /*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/13 17:14:15 by abitonti          #+#    #+#             */
-/*   Updated: 2023/07/19 05:56:53 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/07/30 04:17:18 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ int		ft_free(void *pt);
 char	*ft_filename(char *line, t_env *env, int *error);
 t_token	*token_to_word(t_token *token, char *line, t_env *env);
 t_cmd	*cmd_init(int fdin, int fdout);
-int		cmdexec(t_cmd *cmd, t_env **env);
+int		cmdexec(t_cmd *cmd, t_env **env, t_token *token);
 t_token	**ft_gettoken(t_token **nexttoken, char **line);
 void	ft_printtokenlist(t_cmd *cmd);
 int		checktokenlist(t_token *token, int lasttoken);

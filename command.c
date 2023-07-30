@@ -6,7 +6,7 @@
 /*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/17 02:30:42 by abitonti          #+#    #+#             */
-/*   Updated: 2023/07/19 04:16:17 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/07/30 04:17:19 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,25 +52,27 @@ int	freecmd(t_cmd *cmd, int freeline)
 	return (1);
 }
 
-int	cmdexec(t_cmd *cmd, t_env **env)
+int	cmdexec(t_cmd *cmd, t_env **env, t_token *token)
 {
-	if (!(cmd->tokens))
+	while (token && token->token)
+		token = token->next;
+	if (!token)
 		return (0);
-	if (ft_strcmp(cmd->tokens->line, "echo"))
-		ft_echo(cmd->tokens->next, cmd);
-	else if (ft_strcmp(cmd->tokens->line, "cd"))
-		ft_cd(env, cmd->tokens->next, 0);
-	else if (ft_strcmp(cmd->tokens->line, "pwd"))
+	if (ft_strcmp(token->line, "echo"))
+		ft_echo(token->next, cmd);
+	else if (ft_strcmp(token->line, "cd"))
+		ft_cd(env, token->next, 0);
+	else if (ft_strcmp(token->line, "pwd"))
 		ft_pwd(cmd->fdout);
-	else if (ft_strcmp(cmd->tokens->line, "export"))
-		ft_export(env, cmd->tokens->next);
-	else if (ft_strcmp(cmd->tokens->line, "unset"))
-		ft_unset(env, cmd->tokens->next);
-	else if (ft_strcmp(cmd->tokens->line, "env"))
+	else if (ft_strcmp(token->line, "export"))
+		ft_export(env, token->next);
+	else if (ft_strcmp(token->line, "unset"))
+		ft_unset(env, token->next);
+	else if (ft_strcmp(token->line, "env"))
 		print_env(*env, cmd->fdout);
 	//else if (ft_strcmp(cmd->tokens->line, "exit"))
 	//	ft_exit(cmd->tokens->next);
 	else
-		ft_error(cmd->tokens->line, 0, ": command not found\n", 0);
+		ft_exec(cmd, *env, token);
 	return (1);
 }

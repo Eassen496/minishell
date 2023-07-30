@@ -6,7 +6,7 @@
 /*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/17 02:01:45 by abitonti          #+#    #+#             */
-/*   Updated: 2023/07/19 04:36:06 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/07/30 04:17:12 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,28 +88,6 @@ t_token	**ft_gettoken(t_token **nexttoken, char **line)
 	//	return (token_init(8, nexttoken, line, "&&"));
 	else
 		return (token_init(0, nexttoken, line, *line));
-}
-
-void	ft_printtokenlist(t_cmd *cmd)
-{
-	t_token	*token;
-
-
-	while (cmd)
-	{
-		printf("-------\n");
-		token = cmd->tokens;
-		while (token)
-		{
-			printf("%d", token->token);
-			if (token->line)
-				printf(" : %s", token->line);
-			printf("\n");
-			token = token->next;
-		}
-		cmd = cmd->next;
-	}
-	printf("-------\n");
 }
 
 int	checktokenlist(t_token *token, int lasttoken)
