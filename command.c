@@ -6,7 +6,7 @@
 /*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/17 02:30:42 by abitonti          #+#    #+#             */
-/*   Updated: 2023/07/30 04:17:19 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/07/30 21:41:31 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,8 @@ int	cmdexec(t_cmd *cmd, t_env **env, t_token *token)
 		ft_unset(env, token->next);
 	else if (ft_strcmp(token->line, "env"))
 		print_env(*env, cmd->fdout);
-	//else if (ft_strcmp(cmd->tokens->line, "exit"))
-	//	ft_exit(cmd->tokens->next);
+	else if (ft_strcmp(cmd->tokens->line, "exit"))
+		ft_exit(cmd->tokens->next);
 	else
 		ft_exec(cmd, *env, token);
 	return (1);

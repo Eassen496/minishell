@@ -6,7 +6,7 @@
 /*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/17 00:37:01 by abitonti          #+#    #+#             */
-/*   Updated: 2023/07/30 04:17:14 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/07/30 21:41:26 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ void	ft_pwd(int fdout)
 	write(fdout, wd, ft_strlen(wd));
 	write(fdout, "\n", 1);
 	free(wd);
+	g_minishell.return_value = 0;
 }
 
 void	ft_echo(t_token *token, t_cmd *cmd)
@@ -48,6 +49,37 @@ void	ft_echo(t_token *token, t_cmd *cmd)
 	}
 	if (newline)
 		write(cmd->fdout, "\n", 1);
+	g_minishell.return_value = 0;
+}
+
+void	ft_exit(t_token *token)
+{
+	int		i;
+	char	*tmp;
+
+	i = 0;
+	write(1, "exit\n", 5);
+	if (!token)
+		exit(g_minishell.return_value);
+	while (token && token->next && token->token == 3)
+		token = token->next;
+	if (ft_atoiexit(token->line) == 300)
+	{
+		tmp = ft_strjoin("minishell: exit: ", token->line, 0);
+		tmp = ft_strjoin(tmp, ": numeric argument required", 1);
+		write(2, tmp, ft_strlen(tmp) - 1);
+		write(2, "\n", 1);
+		free(tmp);
+		exit(255);
+	}
+	if (token->next && token)
+	{
+		write(2, "minishell: exit: too many arguments", 35);
+		write(2, "\n", 1);
+		g_minishell.return_value = 1;
+	}
+	else
+		exit (ft_atoiexit(token->line));
 }
 
 char	**ft_buildarg(t_token *token)
