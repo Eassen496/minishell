@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
+/*   By: ale-roux <ale-roux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/08 22:28:41 by abitonti          #+#    #+#             */
-/*   Updated: 2023/07/19 04:13:37 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/07/30 03:29:13 by ale-roux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ void	ft_export(t_env **env, t_token *token)
 			if (token->line[i] == '=')
 			{
 				add_env(env, *env, token->line);
+				g_minishell.return_value = 0;
 				break ;
 			}
 			else if (ft_isamong(token->line[i], "!@#$^*(){}[]:\'\""))
@@ -31,6 +32,7 @@ void	ft_export(t_env **env, t_token *token)
 				write(2, "minishell: export: '", 20);
 				write(2, token->line, ft_strlen(token->line));
 				write(2, "' : not a valid identifier\n", 27);
+				g_minishell.return_value = 1;
 				break ;
 			}
 		}
@@ -52,6 +54,7 @@ void	ft_updatepwd(t_env **env)
 	wd = ft_strjoin("PWD=", getcwd(0, 0), 2);
 	add_env(env, *env, wd);
 	free(wd);
+	g_minishell.return_value = 0;
 }
 
 void	ft_cd(t_env **env, t_token *token, int tofree)
@@ -71,14 +74,21 @@ void	ft_cd(t_env **env, t_token *token, int tofree)
 	else
 		path = token->line;
 	if (!path)
+	{
 		write(2, "minishell: cd: HOME not set\n", 28);
+		g_minishell.return_value = 1;
+	}
 	else if (chdir(path) == -1)
 	{
 		path = ft_strjoin("minishell: cd: ", path, tofree);
 		perror(path);
+		g_minishell.return_value = 1;
 	}
 	else
+	{
 		ft_updatepwd(env);
+		g_minishell.return_value = 0;
+	}
 	if (tofree && path)
 		free(path);
 }
@@ -99,11 +109,15 @@ void	ft_unset(t_env **env, t_token *token)
 					write(2, "minishell: unset: '", 19);
 					write(2, token->line, ft_strlen(token->line));
 					write(2, "' : not a valid identifier\n", 27);
+					g_minishell.return_value = 1;
 					break ;
 				}
 			}
 			if (!token->line[i])
+			{
 				remove_env(env, *env, token->line);
+				g_minishell.return_value = 0;
+			}
 		}
 		token = token->next;
 	}

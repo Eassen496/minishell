@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
+/*   By: ale-roux <ale-roux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/13 17:14:15 by abitonti          #+#    #+#             */
-/*   Updated: 2023/07/19 05:56:53 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/07/30 05:23:51 by ale-roux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,15 @@ typedef struct s_cmd
 	struct s_cmd	*next;
 }	t_cmd;
 
+typedef struct s_minishell
+{
+	//t_cmd	*command;
+	//t_env	*environment;
+	int		return_value;
+}	t_minishell;
+
+t_minishell	g_minishell;
+
 void	print_env(t_env *env, int fd);
 int		ft_getenv(t_env *env, char **line, int fd, int *error);
 void	free_env(t_env *current);
@@ -77,5 +86,10 @@ void	ft_printtokenlist(t_cmd *cmd);
 int		checktokenlist(t_token *token, int lasttoken);
 int		freecmd(t_cmd *cmd, int freeline);
 int		ft_isseparator(char c);
+char	*ft_itoa(int n);
+int		ft_printlastreturnvalue(int fd);
+int		ft_isdigit(int c);
+int		ft_atoiexit(char *str);
+void	ft_exit(t_token *token);
 
 #endif

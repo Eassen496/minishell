@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   command.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
+/*   By: ale-roux <ale-roux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/17 02:30:42 by abitonti          #+#    #+#             */
-/*   Updated: 2023/07/19 04:16:17 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/07/30 05:25:50 by ale-roux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,9 +68,12 @@ int	cmdexec(t_cmd *cmd, t_env **env)
 		ft_unset(env, cmd->tokens->next);
 	else if (ft_strcmp(cmd->tokens->line, "env"))
 		print_env(*env, cmd->fdout);
-	//else if (ft_strcmp(cmd->tokens->line, "exit"))
-	//	ft_exit(cmd->tokens->next);
+	else if (ft_strcmp(cmd->tokens->line, "exit"))
+		ft_exit(cmd->tokens->next);
 	else
+	{
 		ft_error(cmd->tokens->line, 0, ": command not found\n", 0);
+		g_minishell.return_value = 127;
+	}
 	return (1);
 }

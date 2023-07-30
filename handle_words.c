@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handle_words.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
+/*   By: ale-roux <ale-roux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/17 00:44:31 by abitonti          #+#    #+#             */
-/*   Updated: 2023/07/17 04:40:32 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/07/30 03:25:34 by ale-roux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,10 +76,9 @@ t_token	*ft_getenvsplit(t_env *env, char **line, int pipe[3], t_token *token)
 	}
 	else if (ft_isamong(**line, "\'\""))
 		return (token);
-	else if (**line == '?' && ++(*line) && ++pipe[2])
+	else if (**line == '?' && ++(*line))
 	{
-		//ft_printlastreturnvalue(fd);
-		write(pipe[1], "?", 1);
+		pipe[2] += ft_printlastreturnvalue(pipe[1]);
 		return (token);
 	}
 	while (env)

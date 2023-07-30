@@ -1,4 +1,4 @@
-SRC		= minishell.c get_next_line.c builtins.c builtins2.c command.c environment.c environment2.c handle_words.c historic.c parsing.c token.c tools.c tools2.c
+SRC		= minishell.c get_next_line.c builtins.c builtins2.c command.c environment.c environment2.c handle_words.c historic.c parsing.c token.c tools.c tools2.c tools3.c
 OBJS	= ${SRC:.c=.o}
 CC		= gcc
 CFLAGS	= -Wall -Wextra -Werror

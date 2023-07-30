@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
+/*   By: ale-roux <ale-roux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/13 17:13:23 by abitonti          #+#    #+#             */
-/*   Updated: 2023/07/29 01:24:55 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/07/30 03:19:09 by ale-roux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@ void	sig_handler(int plop)
 
 int	main(int argc, char **argv, char **envp)
 {
-	char	*line;
-	int		historic;
-	t_env	*env;
+	char			*line;
+	int				historic;
+	t_env			*env;
 
 	(void) argc;
 	(void) argv;
@@ -36,7 +36,7 @@ int	main(int argc, char **argv, char **envp)
 	signal(SIGQUIT, SIG_IGN);
 	signal(SIGINT, sig_handler);
 	historic = load_historic();
-	global[0]= 0;
+	g_minishell.return_value = 0;
 	while (1)
 	{
 		line = readline("minishell>");

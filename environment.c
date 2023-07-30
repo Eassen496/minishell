@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   environment.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
+/*   By: ale-roux <ale-roux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/12 19:01:23 by abitonti          #+#    #+#             */
-/*   Updated: 2023/07/17 02:56:30 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/07/30 03:20:04 by ale-roux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,17 @@ static int	getval(char *nameval, int fd, int *n, int *error)
 	return (i);
 }
 
+int	ft_printlastreturnvalue(int fd)
+{
+	char	*tmp;
+	int		ret;
+
+	tmp = ft_itoa(g_minishell.return_value);
+	ret = write(fd, tmp, ft_strlen(tmp));
+	free(tmp);
+	return (ret);
+}
+
 int	ft_getenv(t_env *env, char **line, int fd, int *error)
 {
 	int	i;
@@ -53,8 +64,7 @@ int	ft_getenv(t_env *env, char **line, int fd, int *error)
 	else if (ft_isamong(**line, "\'\""))
 		return (0);
 	else if (**line == '?' && ++(*line))
-		//return(ft_printlastreturnvalue(fd));
-		return (write(fd, "?", 1));
+		return(ft_printlastreturnvalue(fd));
 	while (env)
 	{
 		if (namecmp(env->nameval, *line) == 1)
