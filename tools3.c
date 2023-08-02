@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tools3.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-roux <ale-roux@student.42.fr>          +#+  +:+       +#+        */
+/*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/30 03:15:18 by ale-roux          #+#    #+#             */
-/*   Updated: 2023/07/30 06:15:04 by ale-roux         ###   ########.fr       */
+/*   Updated: 2023/07/31 00:19:51 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,20 +71,29 @@ int	ft_atoiexit(char *str)
 	sign = 1;
 	while (str[i] == ' ' || str[i] == '\t')
 		i++;
-	if (str[i] == '-')
-	{
+	if (str[i] == '-' && ++i)
 		sign *= -1;
-		i++;
-	}
+	if (str[i] < '0' || str[i] > '9')
+		return (300);
 	while (str[i] >= '0' && str[i] <= '9')
-	{
-		ret = (ret * 10) + (str[i] - 48);
+		ret = (ret * 10) + (str[i++] - 48);
+	while (str[i] == ' ' || str[i] == '\t')
 		i++;
-	}
-	if ((str[i] <= '0' || str[i] >= '9') && str[i] != ' ' && str[i])
+	if (str[i])
 		return (300);
 	ret *= sign;
-	if (ret < 0 && ((ret * sign) % 256 != 0))
-		return (256 - (ret * sign) % 256);
-	return (ret * sign);
+	if (ret < 0 && ret % 256)
+		return ((ret % 256) + 256);
+	return (ret % 256);
+}
+
+int	ft_contain(char *str, char c)
+{
+	while (*str)
+	{
+		if (*str == c)
+			return (1);
+		str++;
+	}
+	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/13 17:14:15 by abitonti          #+#    #+#             */
-/*   Updated: 2023/07/30 21:41:28 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/08/02 02:52:48 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <fcntl.h>
 # include <unistd.h>
 # include "get_next_line.h"
+# include <errno.h>
 
 typedef struct s_env
 {
@@ -45,8 +46,10 @@ typedef struct s_cmd
 
 typedef struct s_minishell
 {
-	//t_cmd	*command;
-	//t_env	*environment;
+	t_cmd	*command;
+	t_env	*environment;
+	char	*line;
+	int		historic;
 	int		return_value;
 }	t_minishell;
 
@@ -74,7 +77,7 @@ int		ft_isspace(char c);
 int		parse_line(char *line, t_env **env);
 int		ft_error(char *str1, int freestr1, char *str2, int freestr2);
 int		ft_strcmp(char *s1, char *s2);
-t_token	*newtoken(int token, char *line, t_token *nexttoken);
+t_token	*newtoken(int token, char *line, t_token *current);
 int		namecmp(char *nameval, char *name);
 int		ft_free(void *pt);
 char	*ft_filename(char *line, t_env *env, int *error);
@@ -91,5 +94,9 @@ int		ft_printlastreturnvalue(int fd);
 int		ft_isdigit(int c);
 int		ft_atoiexit(char *str);
 void	ft_exit(t_token *token);
+int		ft_exec(t_cmd *cmd, t_env *env, t_token *token);
+int		ft_contain(char *str, char c);
+void	sig_handler(int plop);
+
 
 #endif

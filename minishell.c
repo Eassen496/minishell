@@ -6,7 +6,7 @@
 /*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/13 17:13:23 by abitonti          #+#    #+#             */
-/*   Updated: 2023/07/30 21:41:29 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/08/02 02:50:59 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,39 +17,47 @@ int	global[2];
 void	sig_handler(int plop)
 {
 	(void) plop;
-	printf("minishell>\n");
+	printf("\n");
 	rl_replace_line("", 0);
 	rl_on_new_line();
 	rl_redisplay();
 	return ;
 }
 
-int	main(int argc, char **argv, char **envp)
+void	ft_init(int argc, char **argv, char **envp)
 {
-	char			*line;
-	int				historic;
-	t_env			*env;
 
 	(void) argc;
 	(void) argv;
-	env = load_env(envp);
+	rl_catch_signals = 0;
+	g_minishell.environment = load_env(envp);
 	signal(SIGQUIT, SIG_IGN);
 	signal(SIGINT, sig_handler);
-	historic = load_historic();
+	g_minishell.historic = load_historic();
 	g_minishell.return_value = 0;
+}
+
+int	main(int argc, char **argv, char **envp)
+{
+	ft_init(argc, argv, envp);
 	while (1)
 	{
-		line = readline("minishell>");
-		if (line && *line)
+		g_minishell.line = readline("minishell>");
+		if (g_minishell.line && *g_minishell.line)
 		{
-			add_history(line);
-			write_historic(line, historic);
-			parse_line(line, &env);
-			free(line);
+			add_history(g_minishell.line);
+			write_historic(g_minishell.line, g_minishell.historic);
+			parse_line(g_minishell.line, &g_minishell.environment);
+			free(g_minishell.line);
 		}
-		else if (line)
-			free(line);
+		else if (g_minishell.line)
+			free(g_minishell.line);
 		else
-			return (0);
+		{
+			free_env(g_minishell.environment);
+			close(g_minishell.historic);
+			write(2, "exit\n", 5);
+			exit (g_minishell.return_value);
+		}
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/17 02:33:21 by abitonti          #+#    #+#             */
-/*   Updated: 2023/07/30 04:17:11 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/08/02 03:13:42 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ int	exectoken(t_cmd *cmd, t_token *token, t_env **env)
 			token = ft_pipe(cmd, token);
 			cmdexec(cmd, env, cmd->tokens);
 			cmd = cmd->next;
+			g_minishell.return_value = 0;
 		}
 		else if (!(token->token) || cmd->err)
 			token = token_to_word(token, token->line, *env);
@@ -77,6 +78,7 @@ int	parse_line(char *line, t_env **env)
 	t_token	**nexttoken;
 
 	cmd = cmd_init(0, 1);
+	g_minishell.command = cmd;
 	firstcmd = cmd;
 	nexttoken = &(cmd->tokens);
 	while (*line)

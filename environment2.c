@@ -6,11 +6,20 @@
 /*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/17 00:31:50 by abitonti          #+#    #+#             */
-/*   Updated: 2023/07/17 00:40:06 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/07/31 00:09:37 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	free_env(t_env *env)
+{
+	while (env)
+	{
+		free(env->nameval);
+		env = env->next;
+	}
+}
 
 void	print_env(t_env *env, int fd)
 {

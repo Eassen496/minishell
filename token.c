@@ -6,7 +6,7 @@
 /*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/17 02:01:45 by abitonti          #+#    #+#             */
-/*   Updated: 2023/07/30 04:17:12 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/07/31 06:10:30 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,14 +38,15 @@ int	ft_getword(char *line)
 	return (i);
 }
 
-t_token	*newtoken(int token, char *line, t_token *nexttoken)
+t_token	*newtoken(int token, char *line, t_token *current)
 {
 	t_token	*res;
 
 	res = malloc(sizeof(t_token));
 	res->token = token;
 	res->line = line;
-	res->next = nexttoken;
+	res->next = current->next;
+	current->next = res;
 	return (res);
 }
 

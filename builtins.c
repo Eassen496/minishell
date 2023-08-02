@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-roux <ale-roux@student.42.fr>          +#+  +:+       +#+        */
+/*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/08 22:28:41 by abitonti          #+#    #+#             */
-/*   Updated: 2023/07/30 03:29:13 by ale-roux         ###   ########.fr       */
+/*   Updated: 2023/07/31 03:28:01 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,7 @@ void	ft_unset(t_env **env, t_token *token)
 {
 	int	i;
 
+	g_minishell.return_value = 0;
 	while (token)
 	{
 		if ((!token->token))
@@ -114,10 +115,7 @@ void	ft_unset(t_env **env, t_token *token)
 				}
 			}
 			if (!token->line[i])
-			{
 				remove_env(env, *env, token->line);
-				g_minishell.return_value = 0;
-			}
 		}
 		token = token->next;
 	}

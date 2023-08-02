@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   environment.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ale-roux <ale-roux@student.42.fr>          +#+  +:+       +#+        */
+/*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/12 19:01:23 by abitonti          #+#    #+#             */
-/*   Updated: 2023/07/30 03:20:04 by ale-roux         ###   ########.fr       */
+/*   Updated: 2023/07/31 02:40:39 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,12 +59,12 @@ int	ft_getenv(t_env *env, char **line, int fd, int *error)
 	int	i;
 
 	i = 0;
-	if (ft_isamong(**line, "\t\n\f\r\v <>|/!"))
+	if (ft_isamong(**line, "\t\n\f\r\v <>|/!$"))
 		return (write(fd, "$", 1));
 	else if (ft_isamong(**line, "\'\""))
 		return (0);
 	else if (**line == '?' && ++(*line))
-		return(ft_printlastreturnvalue(fd));
+		return (ft_printlastreturnvalue(fd));
 	while (env)
 	{
 		if (namecmp(env->nameval, *line) == 1)
@@ -75,7 +75,11 @@ int	ft_getenv(t_env *env, char **line, int fd, int *error)
 		env = env->next;
 	}
 	if (error)
+	{
+		while (**line && !ft_isamong(**line, "\t\n\f\r\v <>|/!\'\"$"))
+			(*line)++;
 		return (0);
+	}
 	return (-1);
 }
 
