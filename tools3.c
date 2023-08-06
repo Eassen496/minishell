@@ -6,7 +6,7 @@
 /*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/30 03:15:18 by ale-roux          #+#    #+#             */
-/*   Updated: 2023/08/05 04:39:10 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/08/06 01:59:25 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,9 +62,9 @@ char	*ft_itoa(int n)
 
 int	ft_atoiexit(char *str)
 {
-	int	i;
-	int	ret;
-	int	sign;
+	int			i;
+	long long	ret;
+	int			sign;
 
 	i = 0;
 	ret = 0;
@@ -75,8 +75,10 @@ int	ft_atoiexit(char *str)
 		sign *= -1;
 	if (str[i] < '0' || str[i] > '9')
 		return (300);
-	while (str[i] >= '0' && str[i] <= '9')
+	while (ret >= 0 && str[i] >= '0' && str[i] <= '9')
 		ret = (ret * 10) + (str[i++] - 48);
+	if (ret < 0)
+		return (300);
 	while (str[i] == ' ' || str[i] == '\t')
 		i++;
 	if (str[i])
@@ -84,7 +86,7 @@ int	ft_atoiexit(char *str)
 	ret *= sign;
 	if (ret < 0 && ret % 256)
 		return ((ret % 256) + 256);
-	return (ret % 256);
+	return ((int)(ret % 256));
 }
 
 int	ft_contain(char *str, char c)
