@@ -8,10 +8,10 @@ RM		= rm -rf
 .c.o	:
 	${CC} ${CFLAGS} -c $< -o ${<:.c=.o} -I ~/.brew/Cellar/readline/8.2.1/include
 
+all		: ${NAME}
+
 ${NAME}	: ${OBJS}
 	${CC} ${CFLAGS} -lreadline -L ~/.brew/Cellar/readline/8.2.1/lib ${OBJS} -o ${NAME}
-
-all		: ${NAME}
 
 clean	:
 	${RM} ${OBJS}

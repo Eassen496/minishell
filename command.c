@@ -6,7 +6,7 @@
 /*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/17 02:30:42 by abitonti          #+#    #+#             */
-/*   Updated: 2023/08/05 04:56:11 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/08/08 06:00:00 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ t_cmd	*cmd_init(int fdin, int fdout)
 	res = malloc(sizeof(t_cmd));
 	res->fdin = fdin;
 	res->fdout = fdout;
+	res->pid = 0;
+	res->forked = 0;
 	res->next = 0;
 	res->tokens = 0;
 	res->err = 0;
@@ -50,29 +52,30 @@ int	freecmd(t_cmd *cmd, int freeline)
 	return (1);
 }
 
-int	cmdexec(t_cmd *cmd, t_env **env, t_token *token)
+void	cmdexec(t_cmd *cmd, t_env **env, t_token *token)
 {
 	while (token && token->token)
 		token = token->next;
 	if (!token)
-		return (0);
-	if (!cmd->err && ft_strcmp(token->line, "echo"))
+		return ;
+	if (cmd->forked)
+		cmd->pid = fork();
+	if (!cmd->pid && ft_strcmp(token->line, "echo"))
 		ft_echo(token->next, cmd);
-	else if (!cmd->err && ft_strcmp(token->line, "cd"))
+	else if (!cmd->pid && ft_strcmp(token->line, "cd"))
 		ft_cd(env, token->next, 0, "HOME");
-	else if (!cmd->err && ft_strcmp(token->line, "pwd"))
+	else if (!cmd->pid && ft_strcmp(token->line, "pwd"))
 		ft_pwd(cmd->fdout);
-	else if (!cmd->err && ft_strcmp(token->line, "export"))
+	else if (!cmd->pid && ft_strcmp(token->line, "export"))
 		ft_export(env, token->next);
-	else if (!cmd->err && ft_strcmp(token->line, "unset"))
+	else if (!cmd->pid && ft_strcmp(token->line, "unset"))
 		ft_unset(env, token->next);
-	else if (!cmd->err && ft_strcmp(token->line, "env"))
+	else if (!cmd->pid && ft_strcmp(token->line, "env"))
 		print_env(*env, cmd->fdout);
-	else if (!cmd->err && ft_strcmp(cmd->tokens->line, "exit"))
+	else if (!cmd->pid && ft_strcmp(cmd->tokens->line, "exit"))
 		ft_exit(cmd->tokens->next);
-	else if (!cmd->err)
+	else if (!cmd->pid)
 		ft_exec(cmd, *env, token, "PATH");
-	ft_changefd(0, cmd->fdin);
-	ft_changefd(1, cmd->fdout);
-	return (1);
+	if (!cmd->pid && cmd->forked)
+		exit (g_minishell.return_value);
 }

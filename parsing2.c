@@ -6,7 +6,7 @@
 /*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 02:04:26 by abitonti          #+#    #+#             */
-/*   Updated: 2023/08/05 05:32:39 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/08/07 00:49:49 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,7 @@ void	ft_resetexit(int plop)
 {
 	(void) plop;
 	write(1, "\n", 1);
-	g_minishell.return_value = 1;
-	exit(g_minishell.return_value);
+	exit(1);
 }
 
 t_token	*ft_mother(int pid[2], int fd[2], t_token *token, t_cmd *cmd)
@@ -56,8 +55,11 @@ t_token	*ft_mother(int pid[2], int fd[2], t_token *token, t_cmd *cmd)
 	signal(SIGINT, SIG_IGN);
 	waitpid(pid[0], &(pid[1]), 0);
 	signal(SIGINT, ft_resetline);
-	g_minishell.return_value = WEXITSTATUS(pid[1]);
-	cmd->err = WEXITSTATUS(pid[1]);
+	if (WEXITSTATUS(pid[1]))
+	{
+		g_minishell.return_value = 1;
+		cmd->err = 1;
+	}
 	close(fd[1]);
 	return (token->next->next);
 }
@@ -69,6 +71,8 @@ t_token	*ft_input(t_cmd *cmd, t_token *token)
 	int		fd[2];
 	int		pid[2];
 
+	while (cmd->next)
+		cmd = cmd->next;
 	pipe(fd);
 	cmd->fdin = ft_changefd(fd[0], cmd->fdin);
 	pid[0] = fork();
@@ -82,7 +86,7 @@ t_token	*ft_input(t_cmd *cmd, t_token *token)
 	{
 		line = readline("> ");
 		if (!line || (ft_strcmp(line, stop) && ft_free(line) && ft_free(stop)))
-			exit(g_minishell.return_value);
+			exit(0);
 		write(fd[1], line, ft_strlen(line));
 		write(fd[1], "\n", 1);
 		free(line);

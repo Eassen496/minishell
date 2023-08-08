@@ -6,7 +6,7 @@
 /*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 01:44:24 by abitonti          #+#    #+#             */
-/*   Updated: 2023/08/05 04:00:13 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/08/08 04:04:06 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,17 +67,16 @@ char	**ft_buildenv(t_env	*env)
 
 int	ft_execve(t_cmd *cmd, t_env *env, t_token *token, char *file)
 {
-	int		pid;
 	char	**arg;
 	char	**tabenv;
 	int		status;
 
-	(void) cmd;
-	pid = fork();
-	if (pid)
+	if (!cmd->forked)
+	cmd->pid = fork();
+	if (cmd->pid)
 	{
 		signal(SIGINT, SIG_IGN);
-		waitpid(pid, &status, 0);
+		waitpid(cmd->pid, &status, 0);
 		signal(SIGINT, ft_resetline);
 		g_minishell.return_value = WEXITSTATUS(status);
 		return (status);
@@ -104,7 +103,7 @@ int	ft_exec(t_cmd *cmd, t_env *env, t_token *token, char *path)
 	pipe(fd);
 	path = pipetostr(fd, ft_getenv(env, &path, fd[1], 0), 1);
 	i[0] = 0;
-	while (path && path[i[0]])
+	while (*token->line && path && path[i[0]])
 	{
 		i[1] = 0;
 		while (path[i[0] + i[1]] && path[i[0] + i[1]] != ':')

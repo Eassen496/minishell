@@ -6,7 +6,7 @@
 /*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/13 17:14:15 by abitonti          #+#    #+#             */
-/*   Updated: 2023/08/05 04:39:13 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/08/08 06:00:55 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,14 @@ typedef struct s_cmd
 	int				fdout;
 	int				err;
 	struct s_cmd	*next;
+	int				forked;
+	int				pid;
 }	t_cmd;
 
 typedef struct s_minishell
 {
 	t_cmd	*command;
-	t_env	*environment;
+	t_env	*env;
 	char	*line;
 	int		historic;
 	int		return_value;
@@ -83,7 +85,7 @@ int		ft_free(void *pt);
 char	*ft_filename(char *line, t_env *env, int *error);
 t_token	*token_to_word(t_token *token, char *line, t_env *env);
 t_cmd	*cmd_init(int fdin, int fdout);
-int		cmdexec(t_cmd *cmd, t_env **env, t_token *token);
+void	cmdexec(t_cmd *cmd, t_env **env, t_token *token);
 t_token	**ft_gettoken(t_token **nexttoken, char **line);
 void	ft_printtokenlist(t_cmd *cmd);
 int		checktokenlist(t_token *token, int lasttoken);

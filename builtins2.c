@@ -6,7 +6,7 @@
 /*   By: abitonti <abitonti@student.42mulhouse.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/17 00:37:01 by abitonti          #+#    #+#             */
-/*   Updated: 2023/08/05 05:44:48 by abitonti         ###   ########.fr       */
+/*   Updated: 2023/08/08 05:30:25 by abitonti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,40 +52,24 @@ void	ft_echo(t_token *token, t_cmd *cmd)
 	g_minishell.return_value = 0;
 }
 
-void	ft_freexit(int n)
-{
-	if (g_minishell.command && g_minishell.command->next)
-	{
-		g_minishell.return_value = n;
-		return ;
-	}
-	if (g_minishell.line)
-		free(g_minishell.line);
-	freecmd(g_minishell.command, 1);
-	free_env(g_minishell.environment);
-	close(g_minishell.historic);
-	exit (n);
-}
-
 void	ft_exit(t_token *token)
 {
 	int		i;
 	char	*tmp;
 
 	i = 0;
-	if (!(g_minishell.command && g_minishell.command->next))
-		write(2, "exit\n", 5);
+	write(2, "exit\n", 5);
 	while (token && token->token)
 		token = token->next;
 	if (!token)
-		ft_freexit(g_minishell.return_value);
+		exit(g_minishell.return_value);
 	else if (ft_atoiexit(token->line) == 300)
 	{
 		tmp = ft_strjoin("minishell: exit: ", token->line, 0);
 		tmp = ft_strjoin(tmp, ": numeric argument required\n", 1);
 		write(2, tmp, ft_strlen(tmp));
 		free(tmp);
-		ft_freexit(255);
+		exit(255);
 	}
 	else if (token->next && token)
 	{
@@ -93,5 +77,5 @@ void	ft_exit(t_token *token)
 		g_minishell.return_value = 1;
 	}
 	else
-		ft_freexit(ft_atoiexit(token->line));
+		exit(ft_atoiexit(token->line));
 }
